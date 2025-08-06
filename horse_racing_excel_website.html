@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallop Results - Horse Racing Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .logo::before {
+            content: "🏇";
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .upload-section {
+            margin: 2rem 0;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .upload-card h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            background: #f0f2ff;
+            border-color: #5a67d8;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .upload-link {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .upload-info {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .upload-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .upload-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .upload-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .upload-status.processing {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .data-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-summary h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .column-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .column-item {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .main-content {
+            background: white;
+            margin: 2rem 0;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-section {
+            padding: 2rem;
+        }
+
+        .race-card {
+            background: #fff;
+            border: 2px solid #f1f3f4;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .race-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .race-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .race-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .race-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            opacity: 0.9;
+        }
+
+        .race-info span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .results-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .position {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .position.first { color: #ffd700; }
+        .position.second { color: #c0c0c0; }
+        .position.third { color: #cd7f32; }
+
+        .horse-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .odds {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .race-info {
+                justify-content: center;
+            }
+
+            .results-table {
+                font-size: 0.9rem;
+            }
+
+            .results-table th, .results-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .no-data-message h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">Gallop Results</a>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#results">Results</a></li>
+                        <li><a href="#tracks">Tracks</a></li>
+                        <li><a href="#statistics">Statistics</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Horse Racing Results Database</h1>
+            <p>Upload your Excel database to view comprehensive horse racing results, statistics, and track information.</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="upload-section">
+            <div class="upload-card">
+                <h2>Upload Excel Database</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📊</div>
+                    <p>Drop your Excel file here or <span class="upload-link">browse to upload</span></p>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+                    <div class="upload-info">
+                        <small>Supported formats: .xlsx, .xls (Max size: 10MB)</small>
+                    </div>
+                </div>
+                <div id="uploadStatus" class="upload-status hidden"></div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalRaces">0</div>
+                <div class="stat-label">Total Races</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalTracks">0</div>
+                <div class="stat-label">Tracks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalHorses">0</div>
+                <div class="stat-label">Horses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="dateRange">-</div>
+                <div class="stat-label">Date Range</div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div class="no-data-message">
+                <h3>🏇 Welcome to Gallop Results</h3>
+                <p>Upload your Excel database above to start viewing your horse racing results!</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Gallop Results. All rights reserved. | Upload your data to get started.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        let raceData = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFileUpload();
+            initializeFilters();
+        });
+
+        function initializeFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            // Click to browse files
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        function handleFileUpload(file) {
+            const uploadStatus = document.getElementById('uploadStatus');
+            
+            // Validate file type
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showUploadStatus('error', 'Please select a valid Excel file (.xlsx or .xls)');
+                return;
+            }
+
+            // Validate file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                showUploadStatus('error', 'File size too large. Please select a file smaller than 10MB.');
+                return;
+            }
+
+            showUploadStatus('processing', 'Processing Excel file...');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Get the first sheet
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (jsonData.length === 0) {
+                        showUploadStatus('error', 'The Excel file appears to be empty.');
+                        return;
+                    }
+
+                    // Process the data
+                    processExcelData(jsonData);
+                    
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    showUploadStatus('error', 'Error processing the Excel file. Please check the file format.');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processExcelData(rawData) {
+            try {
+                // Assume first row contains headers
+                const headers = rawData[0];
+                const rows = rawData.slice(1);
+                
+                // Convert to objects
+                raceData = rows.map(row => {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header] = row[index] || '';
+                    });
+                    return obj;
+                }).filter(row => Object.values(row).some(val => val !== '')); // Remove empty rows
+
+                // Update statistics
+                updateStatistics();
+                
+                // Show data summary
+                showDataSummary(headers, raceData.length);
+                
+                // Generate race cards from data
+                generateRaceCards();
+                
+                // Update filters with actual data
+                updateFilterOptions();
+                
+                showUploadStatus('success', `Successfully loaded ${raceData.length} records from Excel file!`);
+                
+            } catch (error) {
+                console.error('Error processing data:', error);
+                showUploadStatus('error', 'Error processing the data. Please check your Excel file structure.');
+            }
+        }
+
+        function showUploadStatus(type, message) {
+            const uploadStatus = document.getElementById('uploadStatus');
+            uploadStatus.className = `upload-status ${type}`;
+            
+            if (type === 'processing') {
+                uploadStatus.innerHTML = `<span class="loading-spinner"></span>${message}`;
+            } else {
+                uploadStatus.innerHTML = message;
+            }
+            
+            uploadStatus.classList.remove('hidden');
+        }
+
+        function updateStatistics() {
+            const totalRaces = new Set(raceData.map(row => `${row.Track || row.track || ''}-${row.Race || row.race || ''}-${row.Date || row.date || ''}`)).size;
+            const totalTracks = new Set(raceData.map(row => row.Track || row.track || row.Venue || row.venue || '')).size;
+            const totalHorses = new Set(raceData.map(row => row.Horse || row.horse || row['Horse Name'] || row['horse name'] || '')).size;
+            
+            // Get date range
+            const dates = raceData.map(row => {
+                const dateStr = row.Date || row.date || row['Race Date'] || row['race date'] || '';
+                return new Date(dateStr);
+            }).filter(date => !isNaN(date));
+            
+            let dateRange = '-';
+            if (dates.length > 0) {
+                const minDate = new Date(Math.min(...dates));
+                const maxDate = new Date(Math.max(...dates));
+                dateRange = `${minDate.getFullYear()} - ${maxDate.getFullYear()}`;
+            }
+
+            document.getElementById('totalRaces').textContent = totalRaces || 0;
+            document.getElementById('totalTracks').textContent = totalTracks || 0;
+            document.getElementById('totalHorses').textContent = totalHorses || 0;
+            document.getElementById('dateRange').textContent = dateRange;
+        }
+
+        function showDataSummary(headers, rowCount) {
+            const mainContent = document.getElementById('mainContent');
+            
+            const summaryHTML = `
+                <div class="data-summary">
+                    <h3>📊 Data Summary</h3>
+                    <p><strong>Records loaded:</strong> ${rowCount}</p>
+                    <p><strong>Columns found:</strong> ${headers.length}</p>
+                    <div class="column-info">
+                        ${headers.map(header => `<div class="column-item">${header}</div>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = summaryHTML + createFiltersHTML() + '<div class="results-section" id="resultsSection"></div>';
+        }
+
+        function createFiltersHTML() {
+            return `
+                <div class="filters">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label for="track">Track</label>
+                            <select id="track">
+                                <option value="">All Tracks</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="race-type">Race</label>
+                            <select id="race-type">
+                                <option value="">All Races</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date">
+                        </div>
+                        <div class="filter-group">
+                            <label for="horse-search">Horse Search</label>
+                            <input type="text" id="horse-search" placeholder="Enter horse name...">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateRaceCards() {
+            // Group data by race
+            const races = {};
+            
+            raceData.forEach(row => {
+                const raceKey = `${row.Track || row.track || 'Unknown'}-${row.Race || row.race || row['Race Name'] || 'Unknown'}-${row.Date || row.date || 'Unknown'}`;
+                
+                if (!races[raceKey]) {
+                    races[raceKey] = {
+                        track: row.Track || row.track || row.Venue || row.venue || 'Unknown Track',
+                        raceName: row.Race || row.race || row['Race Name'] || 'Unknown Race',
+                        date: row.Date || row.date || row['Race Date'] || '',
+                        distance: row.Distance || row.distance || '',
+                        surface: row.Surface || row.surface || '',
+                        prizeMoney: row['Prize Money'] || row['prize money'] || row.Prize || row.prize || '',
+                        results: []
+                    };
+                }
+                
+                races[raceKey].results.push({
+                    position: row.Position || row.position || row.Finish || row.finish || '',
+                    horse: row.Horse || row.horse || row['Horse Name'] || row['horse name'] || '',
+                    jockey: row.Jockey || row.jockey || '',
+                    trainer: row.Trainer || row.trainer || '',
+                    odds: row.Odds || row.odds || '',
+                    time: row.Time || row.time || row['Finish Time'] || row['finish time'] || '',
+                    margin: row.Margin || row.margin || ''
+                });
+            });
+
+            // Generate HTML for race cards
+            const resultsSection = document.getElementById('resultsSection');
+            if (!resultsSection) return;
+            
+            resultsSection.innerHTML = '';
+
+            Object.entries(races).slice(0, 10).forEach(([raceKey, race]) => {
+                const raceCard = createRaceCard(race);
+                resultsSection.appendChild(raceCard);
+            });
+        }
+
+        function createRaceCard(race) {
+            const raceCard = document.createElement('div');
+            raceCard.className = 'race-card';
+            
+            // Sort results by position
+            race.results.sort((a, b) => {
+                const posA = parseInt(a.position) || 999;
+                const posB = parseInt(b.position) || 999;
+                return posA - posB;
+            });
+            
+            raceCard.innerHTML = `
+                <div class="race-header">
+                    <div class="race-title">${race.raceName}</div>
+                    <div class="race-info">
+                        <span>${race.track}</span>
+                        ${race.distance ? `<span>${race.distance}</span>` : ''}
+                        ${race.surface ? `<span>${race.surface}</span>` : ''}
+                        ${race.prizeMoney ? `<span>${race.prizeMoney}</span>` : ''}
+                        ${race.date ? `<span>${new Date(race.date).toLocaleDateString()}</span>` : ''}
+                    </div>
+                </div>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Horse</th>
+                            <th>Jockey</th>
+                            <th>Trainer</th>
+                            <th>Odds</th>
+                            <th>Time</th>
+                            <th>Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${race.results.map(result => `
+                            <tr>
+                                <td><span class="position ${getPositionClass(result.position)}">${result.position}</span></td>
+                                <td class="horse-name">${result.horse}</td>
+                                <td>${result.jockey}</td>
+                                <td>${result.trainer}</td>
+                                <td class="odds">${result.odds}</td>
+                                <td>${result.time}</td>
+                                <td>${result.margin}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            return raceCard;
+        }
+
+        function getPositionClass(position) {
+            const pos = parseInt(position);
+            if (pos === 1) return 'first';
+            if (pos === 2) return 'second';
+            if (pos === 3) return 'third';
+            return '';
+        }
+
+        function updateFilterOptions() {
+            // Update track filter
+            const tracks = [...new Set(raceData.map(row => row.Track || row.track || row.Venue || row.venue))].filter(Boolean);
+            const trackSelect = document.getElementById('track');
+            if (trackSelect) {
+                trackSelect.innerHTML = '<option value="">All Tracks</option>' + 
+                    tracks.map(track => `<option value="${track}">${track}</option>`).join('');
+            }
+
+            // Update race filter
+            const races = [...new Set(raceData.map(row => row.Race || row.race || row['Race Name']))].filter(Boolean);
+            const raceSelect = document.getElementById('race-type');
+            if (raceSelect) {
+                raceSelect.innerHTML = '<option value="">All Races</option>' + 
+                    races.slice(0, 50).map(race => `<option value="${race}">${race}</option>`).join('');
+            }
+        }
+
+        function initializeFilters() {
+            // Add filter functionality (will work after data is loaded)
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('.filter-group select, .filter-group input[type="date"]')) {
+                    applyFilters();
+                }
+            });
+
+            // Add search functionality
+            document.addEventListener('input', function(e) {
+                if (e.target.id === 'horse-search') {
+                    applyFilters();
+                }
+            });
+        }
+
+        function applyFilters() {
+            if (raceData.length === 0) return;
+
+            const trackFilter = document.getElementById('track')?.value || '';
+            const raceFilter = document.getElementById('race-type')?.value || '';
+            const dateFilter = document.getElementById('date')?.value || '';
+            const horseSearch = document.getElementById('horse-search')?.value.toLowerCase() || '';
+
+            // Filter the data
+            const filteredData = raceData.filter(row => {
+                const trackMatch = !trackFilter || (row.Track || row.track || '').includes(trackFilter);
+                const raceMatch = !raceFilter || (row.Race || row.race || '').includes(raceFilter);
+                const dateMatch = !dateFilter || (row.Date || row.date || '').includes(dateFilter);
+                const horseMatch = !horseSearch || (row.Horse || row.horse || '').toLowerCase().includes(horseSearch);
+                
+                return trackMatch && raceMatch && dateMatch && horseMatch;
+            });
+
+            console.log(`Filtered results: ${filteredData.length} out of ${raceData.length} records`);
+            
+            // You can implement filtered display here
+            // For now, this just logs the filtered count
+        }
+    </script>
+</body>
+</html>
